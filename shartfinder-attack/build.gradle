@@ -1,0 +1,38 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "http://repo.spring.io/libs-release" }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.1.10.RELEASE"
+        classpath 'com.sourcemuse.gradle.plugin:gradle-mongo-plugin:0.4.0'
+    }
+}
+
+apply plugin: 'spring-boot'
+apply plugin: 'mongo'
+apply plugin: 'groovy'
+
+repositories {
+    jcenter()
+    maven { url 'http://repo.spring.io/release' }
+}
+
+jar {
+	version = "0.1.0"
+}
+
+dependencies {
+    compile "org.codehaus.groovy:groovy:2.3.1"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-data-mongodb"
+	compile "org.springframework.boot:spring-boot-starter-redis"
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'junit:junit:4.11'
+    testCompile "org.mongodb:mongo-java-driver:2.12.0"
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.2'
+}
