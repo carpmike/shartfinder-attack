@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,11 +22,11 @@ class AttackController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AttackController.class)
 	
-	private StringRedisTemplate template
+	private RedisTemplate<String, Attack> redisTemplateAttack
 	
 	@Autowired
-	public AttackController(StringRedisTemplate template) {
-		this.template = template
+	public AttackController(RedisTemplate<String, Attack> redisTemplateAttack) {
+		this.redisTemplateAttack = redisTemplateAttack
 	}
 
 	@RequestMapping("/attack")
@@ -35,7 +36,7 @@ class AttackController {
 		if(!attack) throw new AttackException("Attack error")
 		
 		LOGGER.info("Sending attack message")
-		template.convertAndSend("attack", new ObjectMapper().writeValueAsString(attack))
+		redisTemplateAttack.convertAndSend("attack", attack)
 		
 		new ResponseEntity<Attack>(attack, HttpStatus.OK)
 	}

@@ -7,4 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 class Attack {
 	@Id BigInteger id
 	String name
+	AttackType type
+	
 }

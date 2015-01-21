@@ -12,10 +12,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableAutoConfiguration
@@ -63,6 +68,23 @@ public class Application {
 	@Bean
 	StringRedisTemplate template(RedisConnectionFactory connectionFactory) {
 		return new StringRedisTemplate(connectionFactory);
+	}
+	
+	@Bean
+	RedisTemplate<String, Attack> redisTemplateAttack(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, Attack> redisTemplate = new RedisTemplate<String, Attack>();
+		redisTemplate.setConnectionFactory(connectionFactory);
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+
+		Jackson2JsonRedisSerializer<Attack> valueSerializer = new Jackson2JsonRedisSerializer<Attack>(
+				Attack.class);
+			
+		// load Java 8 temporal classes	
+		valueSerializer.setObjectMapper(new ObjectMapper().findAndRegisterModules());
+
+		redisTemplate.setValueSerializer(valueSerializer);
+
+		return redisTemplate;
 	}
 
 	public static void main(String[] args) throws InterruptedException {
